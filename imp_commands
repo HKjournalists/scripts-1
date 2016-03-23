@@ -1,0 +1,931 @@
+
+********to open any port in sg***********
+
+aws ec2 authorize-security-group-ingress --group-id sg-996bd1fd --protocol tcp --port 22 --cidr 0.0.0.0/0
+
+*to list vol ids****
+vol=($( aws ec2 describe-volumes --profile My_user --output text  --query Volumes[*]|awk '{print $8}'))  
+
+***to list sgs***
+aws ec2 describe-security-groups --query SecurityGroups[*].GroupId
+
+***to list details of a particular group***
+aws ec2 describe-security-groups --group-ids sg-9d51eef9
+
+***************************
+list all the instances
+
+aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId , Placement.AvailabilityZone]'
+
+to list id of alarms
+
+aws cloudwatch describe-alarms --query 'MetricAlarms[*].Dimensions[*].Value'
+
+to list instance ids
+
+ aws ec2 describe-instances --query 'Reservations[*].Instances[*].InstanceId[*]'
+
+************
+to list running instance 
+aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[*].InstanceId[*]'
+
+*********instance id of newly launched instance
+
+aws ec2 run-instances --image-id  ami-9a562df2 --count 1 --instance-type t2.micro --key-name vpc-pvt  --output json --query 'Instances[].InstanceId' --output text
+
+*************
+tag value of all instances
+aws ec2 describe-instances --query 'Reservations[].Instances[].Tags[].Value[]'
+
+****************
+volumes-instance id
+aws ec2 describe-volumes --query 'Volumes[].Attachments[].InstanceId[]'
+****************
+volume ids
+aws ec2 describe-volumes --query 'Volumes[].Attachments[].VolumeId[]'
+
+*******************
+voli ids <space> instance id
+aws ec2 describe-volumes --query 'Volumes[].Attachments[].[VolumeId ,InstanceId]'
+
+*****************
+name of an instance
+aws ec2 describe-instances  --instance-id i-7461275b --query  'Reservations[].Instances[].Tags[].Value'
+
+***************
+php5 module
+libapache2-mod-auth-mysql php5-mysql
+
+sudo apt-get install libapache2-mod-php5
+sudo apt-get install mysql-server php5-mysql
+sudo apt-get install mysql-server php5-mysql
+sudo apt-get install php5-fpm php5-mysql
+
+***************************
+public ip of a launched instance
+
+aws ec2 run-instances --image-id ami-9a562df2 --count 1 --instance-type t2.micro --key-name vpc-pvt --security-groups launch-wizard-2 --query 'Instances[].PrivateIpAddress[]'    //take pvt ip add of newly run
+
+
+ aws ec2 describe-instances --filters "Name=private-ip-address ,Values=172.31.15.28" --query 'Reservations[].Instances[].NetworkInterfaces[].Association[].PublicIp[]' //find pub ip of that new one
+
+*****************instance with its alarm**********8
+aws cloudwatch describe-alarms --query 'MetricAlarms[*].[MetricName,Dimensions[].Value]'
+
+**********disable api termination
+aws ec2 describe-instance-attribute --instance-id i-5e246571 --attribute disableApiTermination
+
+**************disk utilisation of instance******
+df -h| grep -w "/" | awk '{print $5}'| awk -F% '{print $1}'
+
+df -h |head -n 2
+
+df -h |grep -w "/"|awk '{print "total_size="$2,"Used=" $3 ,"Available=" $4 ,"Percent_usage="$5}'
+
+
+*****************************instance name and their pub IPs*************
+aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query 'Reservations[*].Instances[].[Tags[].Value[],NetworkInterfaces[].Association[].PublicIp[]]' --output text
+
+**********************************sort numbers**********************
+cat mysql-slowquery.log.10 | grep Query_time | awk '{print $3}' | sort -n -r
+
+
+************************************describe regions***************
+aws ec2 describe-regions --query 'Regions[].RegionName[]' --output text
+
+
+**********************************details of instacnes***************
+aws ec2 describe-instances --query 'Reservations[].Instances[].[State.Name,Tags[].Value,InstanceType]' --output text
+
+
+**********************************restoring mongo DB backup*****************
+1) mongorestore -d db db
+2) mongorestore -d [your_db_name] [your_dump_dir]
+
+mongo dump
+mongodump --db dbname -o <path to directory where dump has to be taken>
+***************************************************************************
+tomcat memory leak issue
+
+if apt-get installation 
+go to /usr/share/tomcat7/bin
+create a file setenv.sh
+and copy this line :- CATALINA_OPTS="$CATALINA_OPTS -server -Xms256m -Xmx1024m"
+
+----------------------
+if manual installation 
+go to tomcat's bin folder
+
+and do the same
+******************************************************************************8
+installing wordpress on apache2
+
+(PHP-module for apache2)
+sudo apt-get install php5 libapache2-mod-php5 php5-mcrypt
+******************************************************************************
+NGINX UNABLE TO PARSE CSS
+add this block to sudo vim /etc/nginx/sites-enabled/default before the location /{} block
+
+
+location ~* \.(js|jpg|png|css)$ {
+        root path/to/tomcat/document/root/Test/;
+        expires 30d;
+    }
+*********************************************************************************
+java 8 oracle not recognized by tomcat7
+
+changed .bashrc as explained in the question.
+changed /etc/init.d/tomcat7 to point to oracle Java8 which is missing here!
+JDK_DIRS="/usr/lib/jvm/default-java ${OPENJDKS} /usr/lib/jvm/java-6-openjdk /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-7-oracle /usr/lib/jvm/java-8-oracle"
+
+OR
+
+ /etc/default/tomcat7  set JAVA_HOME to new JDK orcle 8
+
+-------------------------------------------------------------------
+Copy ROOT.war to /var/lib/tomcat7/webapps/ and restart tomcat7 
+
+-------------------------------------------------------------------
+if java heap out of spache error then ,
+
+got /usr/share/tomcat7/bin    and create setenv.sh and  write in the file CATALINA_OPTS="$CATALINA_OPTS -server -Xms256m -Xmx1024m"
+
+
+**********************************************************************
+to estimate the size du -sh command
+
+***********************************************************************
+
+to import a module in python from a separate directory
+
+import sys
+sys.path.append('/home/tarun/backup_script/python-restful-pingdom')
+import pingdom
+************************************************************************
+
+to clear a file without deleting it
+
+suod bash
+type "> abc.log"
+************************************************************************
+
+command to send all scripts to s3
+aws s3 sync . s3://aws_us/scripts/
+
+***********************************************************************
+
+filtered value on the basis of tags 
+aws ec2 describe-instances --filter Name=tag:Environment,Values=Staging --region us-east-1 --query 'Reservations[].Instances[].InstanceId' --output text
+
+**************allow policy access to only a region
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "ec2:*",
+            "Effect": "Allow",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "ec2:Region": "us-east-1"
+                }
+            }
+        }
+    ]
+}
+************************allow policy access to only a bucket
+
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::359008584474:user/thoughtbuzz-Druid"
+			},
+			"Action": "s3:*",
+			"Resource": [
+				"arn:aws:s3:::tbip.qa.druid/*",
+				"arn:aws:s3:::tbip.qa.druid"
+			]
+		}
+	]
+}
+******************************spot request command***********************
+aws ec2 request-spot-instances  --region us-east-1 --spot-price 0.009  --launch-specification "{ \"KeyName\": \"kew\", \"ImageId\": \"ami-d05e75b8\" , \"InstanceType\": \"m3.medium\" , \"Placement\": {\"AvailabilityZone\": \"us-east-1a\"}, \"SecurityGroupIds\": [\"sg-8b451aef\"],\"SubnetId\": \"subnet-6627fe4d\" }"
+
+*****************spot pricee history for last one hour*****************************************
+ aws ec2 describe-spot-price-history --region us-east-1 --instance-types m3.medium --filters Name="product-description",Values="Linux/UNIX", Name="availability-zone",Values="us-east-1b" --start-time 2015-06-19T09:28:59 --end-time 2015-06-19T10:28:59
+
+************************spot request and capturing its id************
+aws ec2 request-spot-instances  --region us-east-1 --spot-price 0.009  --launch-specification "{ \"KeyName\": \"kew\", \"ImageId\": \"ami-d05e75b8\" , \"InstanceType\": \"m3.medium\" , \"Placement\": {\"AvailabilityZone\": \"us-east-1a\"}, \"SecurityGroupIds\": [\"sg-8b451aef\"],\"SubnetId\": \"subnet-6627fe4d\" }" --query 'SpotInstanceRequests[].SpotInstanceRequestId' --output text
+
+
+*************************************
+
+date formatting in above command :--------      date +%Y-%m-%dT%H:%M:%S
+****************************************
+if accepted request
+
+aws ec2 describe-spot-instance-requests  --query 'SpotInstanceRequests[].[SpotInstanceRequestId,State]' --output text | grep active
+
+************while logic to check it continously
+while [ "`aws ec2 describe-spot-instance-requests  --query 'SpotInstanceRequests[].[SpotInstanceRequestId,State]' --output text` | grep open" ]; do  echo "pending"; done
+
+******************************************8
+instance id of allocated instance
+
+i=`aws ec2 describe-spot-instance-requests --spot-instance-request-ids sir-02b958kd --query 'SpotInstanceRequests[].InstanceId' --output text`
+
+***********************************************
+ip of that instance
+
+ip=`aws ec2 describe-instances --instance-ids $i  --query 'Reservations[].Instances[].NetworkInterfaces[].Association[].PublicIp[]' --output text`
+
+*****************installing Awscli***************
+sudo apt-get install -y python-pip
+sudo pip install awscli
+echo 'complete -C aws_completer aws' >> ~/.bashrc
+source ~/.bashrc
+****************************multi-instanance-request*****************
+r=($(aws ec2 request-spot-instances  --region us-east-1 --spot-price 0.0094  --launch-specification "{ \"KeyName\": \"kew\", \"ImageId\": \"ami-d05e75b8\" , \"InstanceType\": \"m3.medium\" , \"UserData\": \"$test\" , \"SecurityGroupIds\": [\"sg-8b451aef\"] }"  --query 'SpotInstanceRequests[].SpotInstanceRequestId' --output text --instance-count 2))
+
+for i in "${r[@]}";do echo $i;done;
+
+**************************************jmeter-master-slave-region-different***************************
+slave:-54.152.68.4
+master:- 54.175.31.16
+[master]
+jmeter.properties:-
+
+export JVM_ARGS="-Djava.rmi.server.hostname=localhost"
+remote_hosts=54.175.31.16
+server_port=1099
+client.rmi.localport=60000
+
+jmeter-server file
+
+RMI_HOST_DEF=-Djava.rmi.server.hostname=54.152.68.4
+
+[slave]
+jmeter.properties:-
+
+server.rmi.localport=50000
+
+jmeter-server file
+
+RMI_HOST_DEF=-Djava.rmi.server.hostname=54.152.68.4
+
+forming reverse ssl layer from master server-slave server
+
+ 
+
+refrence:- http://stackoverflow.com/questions/16618915/setting-up-jmeter-for-distributed-testing-in-aws-with-connectivity-issues
+********************autoscaling*****************
+
+
+
+*************************************************
+
+aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[].DesiredCapacity' --output text --region us-east-1
+
+aws autoscaling update-auto-scaling-group --auto-scaling-group-name tbip-staging-render-autoscaling-group --desired-capacity 2 --region us-east-1
+
+**************************
+aws ec2 describe-instances --filters "Name=ip-address,Values=52.7.209.130" --profile prod --region us-east-1 --query 'Reservations[].Instances[].InstanceId' --output text
+
+
+aws ec2 describe-addresses --allocation-ids eipalloc-18a4f27d --profile prod --region us-east-1
+
+
+aws ec2 describe-addresses --filters "Name=public-ip,Values=52.7.209.130" --profile prod --region us-east-1 --query 'Addresses[].AssociationId' --output text
+
+aws ec2 disassociate-address --association-id eipassoc-1197c976 --profile prod --region us-east-1
+
+aws ec2 associate-address --instance-id <isnadiansd> --public-ip <asdsad> --region us-east-1 --profile prod
+
+aws autoscaling describe-scaling-activities --auto-scaling-group-name tbip-staging-render-autoscaling-group --region us-east-1 --profile prod | grep Launching | awk -F : '{print $3}' | head -n1 | awk -F\" '{print $1}'	
+
+aws ec2 associate-address --instance-id <isnadiansd> --public-ip <asdsad> --region us-east-1 --profile prod 
+
+
+
+
+********************************
+implementing fail2ban for ssh
+
+apt-get update
+sudo apt-get install fail2ban -y
+service fail2ban start
+
+********************apache2 logs pointing to other sites**************
+add this to vhost and block apache modules like proxy_http and proxy_balancer if not required
+ 
+
+<VirtualHost *:80>
+    ServerName catchall
+    <Location />
+        Order allow,deny
+        Deny from all
+    </Location>
+</VirtualHost>
+
+**************DOCKER CONTENT***********************
+https://docs.docker.com/introduction/understanding-docker/
+
+*********************NGINX-THREAD.sh***********
+
+#!/bin/bash
+
+INST_ID=`ec2metadata --instance-id`
+output=`curl http://localhost/nginx_status`
+threads=`echo $output | awk  '{print $3}'`
+/usr/local/bin/aws cloudwatch put-metric-data --metric-name "nginx-thread-<servername>" --unit Count --value $threads --dimensions InstanceId=$INST_ID --namespace System/Linux --region ap-southeast-1
+
+
+**********************rc.local logs are in /var/log/boot.log
+
+****************server block in nginx for nginx status page***************
+
+#nginx server status page enabling
+        location /nginx_status {
+          stub_status on;
+          access_log on;
+          allow 127.0.0.1;
+          deny all;
+        }
+
+***************************************cron for nginx-thread**********
+
+*/1 * * * * /home/ubuntu/scripts/NGINX-THREAD.sh >> /home/ubuntu/nginx_thread.log 2>&1
+
+*******************server-status page in apache2**************************
+in vhost ++++++
+<Location /server-status>
+    ProxyPass !
+    SetHandler server-status
+    Order deny,allow
+    Satisfy any
+    Allow from all
+
+</Location>
+
+in /etc/apache2/mods-enabled/status.conf
+
+<Location /server-status>
+    SetHandler server-status
+    Order deny,allow
+    Deny from all
+#       Allow from all
+    Allow from 127.0.0.1 ::1
+#    Allow from 192.0.2.0/24
+</Location>
+
+a2enmod status 
+
+when proxy is enabled _------_____---____-----_-_--____---
+
+<Location /server-status>
+    ProxyPass !
+    SetHandler server-status
+    Order deny,allow
+    #Satisfy any
+    Allow from localhost
+
+</Location>
+
+    <IfModule mod_proxy.c>
+        ProxyPass / http://localhost:8080/
+        ProxyPassReverse / http://localhost:8080/
+        ProxyPreserveHost On
+    </IfModule>
+
+
+
+*********************************************APACHE-THREAD.sh**************
+#!/bin/bash
+
+INST_ID=`ec2metadata --instance-id`
+output=`curl http://localhost/server-status`
+threads=`echo $output | grep "currently being processed" | awk -F, '{print$3}' | awk -F '<dt>' '{print $7}' | awk  '{print $1}'`
+/usr/local/bin/aws cloudwatch put-metric-data --metric-name "apache-thread-<name>" --unit Count --value $threads --dimensions InstanceId=$INST_ID --namespace System/Linux --region ap-southeast-1
+
+
+*********************************cron for the same****************************
+*/1 * * * * /home/ubuntu/scripts/APACHE-THREAD.sh >> /home/ubuntu/apache_thread.log 2>&1
+
+
+*******************PHP MYADMIN ERROR*******FORBIDDEN
+
+ <IfModule mod_authz_core.c>
+     # Apache 2.4
+        require local
+       Allow from 0.0.0.0
+require all granted  #imp
+******************************************************
+cloudwatch alarm 
+
+echo $b | awk -F, '{print $1}'
+
+aws cloudwatch describe-alarms --alarm-names tbip-Production-mongo-CPU-UTILIZATION --profile alarm_check_user --query 'MetricAlarms[].MetricName' --output text
+
+echo $a |egrep 'connections|thread'
+*******************************create 1 gb random file
+dd if=/dev/urandom of=1GB.bin bs=64M count=16 iflag=fullblocks
+dd if=/dev/zero of=output.dat  bs=1024  count=10240 (10mb file)
+
+
+********************************script running in daemon****************8
+nohup ./<script or command > 0<&- &> <log.file> &
+
+
+#####################################################################################################################################
+For s3 permission :- either give bucket policy individually to each bucket but user policy should have listall bucket, list bucket , permissions to have an access of S3 console.
+
+2nd method:- Only create a user policy like below and specify which bucket should be given access and no bucket policy individually
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:ListAllMyBuckets",
+                "s3:ListAllBuckets"
+            ],
+            "Resource": [
+                "arn:aws:s3:::*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": "*",
+            "Resource": [
+                "arn:aws:s3:::tbip.prod.druid",
+                "arn:aws:s3:::tbip.prod.druid/*",
+                "arn:aws:s3:::tbip.qa.druid",
+                "arn:aws:s3:::tbip.qa.druid/*"
+            ]
+        }
+    ]
+}
+
+***********************************************************
+
+************************policy
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::359008584474:user/test"
+			},
+			"Action": "s3:*",
+			"Resource": [
+				"arn:aws:s3:::tbip.qa.druid/*",
+				"arn:aws:s3:::tbip.qa.druid"
+			]
+		}
+	]
+}
+*********************************new bucket policy for tbip.prod.druid************
+{
+	"Version": "2012-10-17",
+	"Id": "Policy1436892956008",
+	"Statement": [
+		{
+			"Sid": "Stmt1436892945237",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::359008584474:user/test"
+			},
+			"Action": "s3:*",
+			"Resource": "arn:aws:s3:::tbip.prod.druid"
+		}
+	]
+}
+
+*******************************user policy for tbip.druid*****************
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:ListAllMyBuckets",
+                "s3:ListAllBuckets"
+            ],
+            "Resource": [
+                "arn:aws:s3:::*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": "*",
+            "Resource": [
+                "arn:aws:s3:::tbip.prod.druid",
+                "arn:aws:s3:::tbip.prod.druid/*"
+            ]
+        }
+    ]
+}
+***********************************mysql user with all permissions**************
+CREATE USER 'phpadmin'@'%' IDENTIFIED BY 'viddies123';
+grant all on *.* to 'phpadmin'@'%' IDENTIFIED BY 'viddies123';
+flush privileges;
+
+***************************************change time zone of server to IST*************
+cd /etc
+ln -sf /usr/share/zoneinfo/Asia/Calcutta localtime
+
+
+**********************************shortcut copy and paste command in linux**********
+stty intr ^X  // default exit is ctrl+d
+stty copy ^C   to cpoy
+stty paste ^V to paste
+stty -g
+stty -g> ~/.stty 
+
+
+add following to .bashrc
+
+case $- in
+ *i*)
+   stty `cat ~/.stty`     #  reload the stored stty settings
+   bind -u quoted-insert  #  unbind the quoted-insert function of bash - free Ctrl+V for paste
+esac
+
+***********************updating url in mysql db************
+
+
+
+UPDATE hi_options SET option_value = replace(option_value, 'http://hiveinside.com/', 'http://newstaging.hiveinside.com/') WHERE option_name = 'home' OR option_name = 'siteurl';
+
+UPDATE hi_posts SET guid = replace(guid, 'http://hiveinside.com/','http://newstaging.hiveinside.com/');
+
+UPDATE hi_posts SET post_content = replace(post_content, 'http://hiveinside.com/', 'http://newstaging.hiveinside.com/');
+
+UPDATE hi_postmeta SET meta_value = replace(meta_value,'http://hiveinside.com/','http://newstaging.hiveinside.com/');
+
+
+
+
+UPDATE hi_options SET option_value = replace(option_value, 'http://newstaging.hiveinside.com', 'http://hiveinside.com/') WHERE option_name = 'home' OR option_name = 'siteurl';
+
+UPDATE hi_posts SET guid = replace(guid, 'http://newstaging.hiveinside.com','http://hiveinside.com/');
+
+UPDATE hi_posts SET post_content = replace(post_content, 'http://newstaging.hiveinside.com', 'http://hiveinside.com/');
+
+UPDATE hi_postmeta SET meta_value = replace(meta_value,'http://newstaging.hiveinside.com','http://hiveinside.com/');
+
+
+**********************************************************************************8
+custom error page in nginx from a different directory
+
+#CUSTOM ERROR PAGE BLOCK IN NGINX
+        error_page 502 /index.html;
+        location = /index.html {
+        root /usr/share/nginx/html/static_page;
+        #try_files $uri /index.html =502;
+        }
+    
+        location = /logo1.png {
+         root /usr/share/nginx/html/static_page;
+        }
+    
+        location = /dashboard.jpg { 
+        root /usr/share/nginx/html/static_page;
+        }
+
+        location = /style.css {
+        root /usr/share/nginx/html/static_page;
+        }
+        location = /font-awesome.css {
+        root /usr/share/nginx/html/static_page;
+        }
+************************************************************************************
+permanent redirection in nginx 
+
+i wanted to redirect from cafeteria.intelligrape.net to cafeteria.tothenew.com
+
+added a server block in the conf file...
+server {
+        listen 80;
+        server_name cafeteria.intelligrape.net;
+        return 301 $scheme://cafeteria.tothenew.com$request_uri;
+}
+
+server {
+listen 80;
+and normal block
+}
+
+
+
+permamnent redirection in apache
+
+<VirtualHost *:80>
+ServerAlias thoughtbuzz.com  www.thoughtbuzz.net thoughtbuzz.net
+Redirect Permanent / http://www.thoughtbuzz.com
+</VirtualHost>
+****************************************************resize2fs on EBS*****************
+sudo resize2fs /dev/xvda1
+
+**************************************************************************************
+To execute a script at startup of Ubuntu
+
+Edit /etc/rc.local and add your commands
+The script must always end with exit 0
+
+To execute a script upon rebooting Ubuntu
+
+Put your script in /etc/rc0.d
+Make it executable (sudo chmod +x myscript)
+Note: The scripts in this directory are executed in alphabetical order
+
+The name of your script must begin with K99 to run at the right time. 
+To execute a script at shutdown
+
+Put your script in /etc/rc6.d
+Make it executable (sudo chmod +x myscript)
+Note: The scripts in this directory are executed in alphabetical order
+
+The name of your script must begin with K99 to run at the right time.
+
+
+***************************************************************
+Authentication in mongo
+
+db.createUser(
+  {
+    user: "root",
+    pwd: "root",
+    roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+  }
+)
+
+
+----------------------
+MAIN WORKING NOW
+------------------------
+db.createUser(
+    {
+      user: "omniog",
+      pwd: "solari001",
+      roles: [       
+         { role: "dbAdmin", db: "omniog" },
+         { role: "readWrite", db: "omniog" }
+      ]
+    }
+)
+
+*****************************************************************
+sed replcaing variable
+sed -i "s/abc/$m/" file.txt where $m = mno
+
+*************************************************************IAM POLICY FOR BOTH s3 And cloudwatch
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": "*"
+        },
+        {
+            "Action": [
+                "autoscaling:Describe*",
+                "cloudwatch:*",
+                "logs:*",
+                "sns:*"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ]
+}
+
+******************************************************************add user in sudoers file to make it passwordless*******
+open file with 
+sudo visudo {It'll also check for syntax error as well and if there is one...will not allow u to save the file}
+
+add entry for user 
+
+tarun ALL=(ALL) NOPASSWD:ALL
+ 
+save the file and tarun user is now password less
+
+**********************************mongo installation steps on ubuntu******************************************************
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org=3.0.2 mongodb-org-server=3.0.2 mongodb-org-shell=3.0.2 mongodb-org-mongos=3.0.2 mongodb-org-tools=3.0.2
+
+
+***********************www to non-www redirect nginx***********
+ server_name recommender.intelligrape.net www.recommender.intelligrape.net;
+         if ($host = 'www.recommender.intelligrape.net'){
+               rewrite ^/(.*)$ http://recommender.intelligrape.net/$1 permanent;
+}
+
+*************************************************key=name of instance ************
+inst_name=`/usr/local/bin/aws ec2 describe-instances --instance-ids $i --region us-east-1 --query 'Reservations[].Instances[].Tags[?Key==\`Name\`].Value' --output text`
+
+*******************************************nginx proxy-pass usecase*****************
+abc/events.json?accesskey=asdksadkas  //this needed to be made accessible
+
+location /events {
+                proxy_pass http://127.0.0.1:7070$uri$is_args$query_string;
+        }
+
+*******************************************************************************
+time difference in bash
+
+date1="Sat Dec 28 03:22:19 2013"
+date2="Sun Dec 29 02:22:19 2013"
+date -d @$(( $(date -d "$date2" +%s) - $(date -d "$date1" +%s) )) -u +'%H:%M:%S'
+
+
+********************adding location block in apache2************
+
+installing new wordpress theme on existing wordpress server from a new document root ,,, thoughtbuzz.com/thought/wp-admin.php    but actual doc-root was /var/www/word/wp    
+
+error was :- AH01797: client denied by server configuration:
+
+added this block in apache 
+<LocationMatch ^/thought>
+Order Allow,Deny
+allow from all
+</LocationMatch>
+and it will install 
+
+*********************************jetty settings****************8
+add this in jetty/bin/jetty.sh because jetty will recognize only JAVA_OPTIONS... (not _JAVA_OPTIONS , JAVA_OPTS )..  
+
+JAVA_OPTIONS="-Djava.awt.headless=true -Dgrails.instance.type=worker-alpha -Dtbip.config.location=/home/ubuntu/tbip-config.groovy -Xms1024m -Xmx1800m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -Duser.home=/home/ubuntu/jetty"
+
+*********************************policy to create only t2.small in n.virginia wit all security group and tagging options***********
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:RunInstances",
+                "ec2:StopInstances",
+                "ec2:TerminateInstances",
+                "ec2:RebootInstances",
+                "ec2:CreateTags",
+                "ec2:DeleteTags",
+                "ec2:CreateSecurityGroup",
+                "ec2:DeleteSecurityGroup"
+            ],
+            "Resource": [
+                "arn:aws:ec2:us-east-1:861931862932:instance/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "ec2:InstanceType": [
+                        "t2.small"
+                    ]
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": "ec2:*",
+            "Resource": [
+                "arn:aws:ec2:us-east-1::image/ami-*",
+                "arn:aws:ec2:us-east-1:861931862932:subnet/*",
+                "arn:aws:ec2:us-east-1:861931862932:network-interface/*",
+                "arn:aws:ec2:us-east-1:861931862932:volume/*",
+                "arn:aws:ec2:us-east-1:861931862932:key-pair/*",
+                "arn:aws:ec2:us-east-1:861931862932:security-group/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": ["ec2:CreateSecurityGroup",
+                        "ec2:DeleteSecurityGroup"],
+            "Resource": [
+                "*"
+            ]
+        
+        }
+    ]
+}
+
+*****************************
+custom error page for maintenance 
+
+<================================================>
+<!doctype html>
+<title>Site Maintenance</title>
+<style>
+  body { text-align: center; padding: 150px; }
+  h1 { font-size: 50px; }
+  body { font: 20px Helvetica, sans-serif; color: #333; }
+  article { display: block; text-align: left; width: 650px; margin: 0 auto; }
+  a { color: #dc8100; text-decoration: none; }
+  a:hover { color: #333; text-decoration: none; }
+</style>
+
+<article>
+    <h1>We&rsquo;ll be back soon!</h1>
+    <div>
+        <p>Sorry for the inconvenience but we&rsquo;re performing some maintenance at the moment. If you need to you can always <a href="mailto:#">contact us</a>, otherwise we&rsquo;ll be back online shortly!</p>
+        <p>&mdash; The Team</p>
+    </div>
+</article>
+<==================================================>
+
+<===================================================>
+
+Access needed for backup policy
+
+describe volumes
+describe tags
+create snapshot
+create tags
+describe snapshots
+delete snapshots
+describe instances
+create image
+describe images
+deregister image
+<====================================================>
+backup policy for above access
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1407996892000",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateSnapshot",
+                "ec2:CreateTags",
+                "ec2:DescribeInstances",
+                "ec2:DescribeVolumes",
+                "ec2:DescribeTags",
+                "ec2:DescribeSnapshot",
+                "ec2:DeleteSnapshot",
+                "ec2:CreateImage",
+                "ec2:DescribeImages",
+                "ec2:DeregisterImage"
+            ],
+            "Resource": [
+                "*"
+            ]
+        }
+    ]
+}
+
+*******************************8
+usersetting
+
+
+export JAVA_HOME=/usr/lib/jvm/java-7-oracle
+export GRAILS_PROJECT_HOME=~/famelive-webapp/
+export GRAILS_VERSION=2.4.3
+## The Jettty Distribution has been modified to read the JAVA_OPTS from enviornment. So custom -D properties can be set from here
+export JAVA_OPTS="-XX:MaxPermSize=512m -Xms128m -Xmx2048m -server -XX:MaxGCPauseMillis=200 -XX:ParallelGCThreads=5"
+
+#export PATH=$PATH:/opt/groovy/bin
+#export GRAILS_HOME=/opt/grails-$GRAILS_VERSION
+export GRAILS_HOME=/opt/grails
+export PATH=$PATH:$GRAILS_HOME/bin
+export CATALINA_PID=~/WEB_SERVER_PID
+
+
+
+stopserver.sh
+~/tomcat/bin/catalina.sh stop -force
+rm -rf $CATALINA_PID
+
+********************************regional access read only
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "ec2:Describe*"
+            ],
+            "Effect": "Allow",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "ec2:Region": "us-east-1"
+                }
+            }
+        }
+    ]
+}

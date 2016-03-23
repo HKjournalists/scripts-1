@@ -1,0 +1,9 @@
+Here is the list of alarms on your instances:
+DiskWriteBytes	['i-5e246571']
+CPUUtilization	['i-8a8dcba5']
+CPUUtilization	['i-9cb6676c']
+*********************************************************************************************
+Termination detection details on your instances:
+i-9cb6676c:
+
+False
