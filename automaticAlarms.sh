@@ -29,11 +29,11 @@ mkdir /home/ubuntu/monitoringScriptlogs
 
 if [ $REGION='ap-southeast-1' ]
 then 
-       _disk_arn=arn:aws:sns:ap-southeast-1:442793157362:Fame-Production-Disk
-       _mem_arn=arn:aws:sns:ap-southeast-1:442793157362:Fame-Production-Memory
-       _cpu_arn=arn:aws:sns:ap-southeast-1:442793157362:Fame-Production-CPU
-       _network_arn=arn:aws:sns:ap-southeast-1:442793157362:fame-production-network
-       _status_arn=arn:aws:sns:ap-southeast-1:442793157362:Fame-Production-Status-Check
+       _disk_arn=arn:aws:sns:eu-west-1:811057442277:findacargo-disk
+       _mem_arn=arn:aws:sns:eu-west-1:811057442277:findacargo-memory
+       _cpu_arn=arn:aws:sns:eu-west-1:811057442277:findacargo-CPU
+       _network_arn=arn:aws:sns:eu-west-1:811057442277:findacargo-high-network
+       _status_arn=arn:aws:sns:eu-west-1:811057442277:findacargo-Status
 fi
 
 echo "Reading the name of the instance"
@@ -72,10 +72,10 @@ echo "+++++++++++++++++++++++++++++++++++Enter the thresholds for alerts++++++++
 DISK_UTILIZATION_THRESHOLD=80
 
 #read -p "Memory alert threshold(default 80): " MEMORY_UTILIZATION_THRESHOLD
-MEMORY_UTILIZATION_THRESHOLD=99	
+MEMORY_UTILIZATION_THRESHOLD=90	
 
 #read -p "CPU alert threshold(default 80): " CPU_UTILIZATION_THRESHOLD
-CPU_UTILIZATION_THRESHOLD=99	
+CPU_UTILIZATION_THRESHOLD=80	
 
 #read -p "Network in threshold(default 70000000 bytes): " NETWORK_IN_THRESHOLD
 NETWORK_IN_THRESHOLD=400000000
